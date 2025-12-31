@@ -1,34 +1,32 @@
 trigger: none
-pool: 
- name: bhaweshpool
 
-stages:
-  - stage: lint_appcodes
-    displayName: lint
-    steps :
-    - task: NodeTool@0
-      inputs:
-        versionSource: 'spec'
-        versionSpec: '18.x'
-        checkLatest: true
+pool:
+  name: bhaweshpool
 
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: 'npm install'
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: 'npm eslint src/ --ext .js,.jsx'
-    - task: PublishBuildArtifacts@1
-      inputs:
-       PathtoPublish: 'eslint-report.xml'
-       ArtifactName: 'eslint-report'
-       displayName: 'Publish ESLint report as artifact'
+jobs:
+- job: lint_job
+  displayName: Lint React App
+  steps:
 
-    - task: PublishCodeAnalysisResults@1
-      inputs:
-        codeAnalysisTool: 'eslint'
-        summaryFileLocation: 'eslint-report.xml'
-        reportDirectory: '.' 
-        displayName: 'Publish ESLint Report to Azure DevOps'    
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: 'npm install'
+    displayName: 'Install npm dependencies'
+
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: 'npx eslint src/ --ext .js,.jsx -f checkstyle -o eslint-report.xml'
+    displayName: 'Run ESLint and generate report'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'eslint-report.xml'
+      ArtifactName: 'eslint-report'
+    displayName: 'Publish ESLint report as artifact'
