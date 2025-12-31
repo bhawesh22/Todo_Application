@@ -4,29 +4,52 @@ pool:
   name: bhaweshpool
 
 jobs:
-- job: lint_job
-  displayName: Lint React App
+# - job: lint_job
+#   displayName: Lint React App
+#   steps:
+
+#   - task: NodeTool@0
+#     inputs:
+#       versionSpec: '18.x'
+#     displayName: 'Install Node.js'
+
+#   - task: PowerShell@2
+#     inputs:
+#       targetType: 'inline'
+#       script: 'npm install'
+#     displayName: 'Install npm dependencies'
+
+#   - task: PowerShell@2
+#     inputs:
+#       targetType: 'inline'
+#       script: 'npx eslint src/ --ext .js,.jsx -f checkstyle -o eslint-report.xml'
+#     displayName: 'Run ESLint and generate report'
+
+#   - task: PublishBuildArtifacts@1
+#     inputs:
+#       PathtoPublish: 'eslint-report.xml'
+#       ArtifactName: 'eslint-report'
+#     displayName: 'Publish ESLint report as artifact'
+- job: sonar_scan
+  displayName: SonarQube Scan
   steps:
 
-  - task: NodeTool@0
+  - task: SonarQubePrepare@5
     inputs:
-      versionSpec: '18.x'
-    displayName: 'Install Node.js'
+      SonarQube: 'sonarqubeconnection'
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: 'todo-react-app'
+      cliProjectName: 'Todo React App'
+      cliSources: 'src'
+    displayName: 'Prepare SonarQube Analysis'
 
-  - task: PowerShell@2
+  - task: SonarQubeAnalyze@8
     inputs:
-      targetType: 'inline'
-      script: 'npm install'
-    displayName: 'Install npm dependencies'
+      jdkversion: 'JAVA_HOME_17_X64'
+    displayName: 'Run SonarQube Analysis'
 
-  - task: PowerShell@2
+  - task: SonarQubePublish@5
     inputs:
-      targetType: 'inline'
-      script: 'npx eslint src/ --ext .js,.jsx -f checkstyle -o eslint-report.xml'
-    displayName: 'Run ESLint and generate report'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: 'eslint-report.xml'
-      ArtifactName: 'eslint-report'
-    displayName: 'Publish ESLint report as artifact'
+      pollingTimeoutSec: '300'
+    displayName: 'Publish SonarQube Results'
