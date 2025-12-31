@@ -1,8 +1,34 @@
-trigger: none 
-pool: Default
+trigger: none
+pool: 
+ name: bhaweshpool
 
-steps: 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'Write-Host "Hello World"'
+stages:
+  - stage: lint_appcodes
+    displayName: lint
+    steps :
+    - task: NodeTool@0
+      inputs:
+        versionSource: 'spec'
+        versionSpec: '18.x'
+        checkLatest: true
+
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: 'npm install'
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: 'npm eslint src/ --ext .js,.jsx'
+    - task: PublishBuildArtifacts@1
+      inputs:
+       PathtoPublish: 'eslint-report.xml'
+       ArtifactName: 'eslint-report'
+       displayName: 'Publish ESLint report as artifact'
+
+    - task: PublishCodeAnalysisResults@1
+      inputs:
+        codeAnalysisTool: 'eslint'
+        summaryFileLocation: 'eslint-report.xml'
+        reportDirectory: '.' 
+        displayName: 'Publish ESLint Report to Azure DevOps'    
