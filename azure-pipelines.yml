@@ -33,24 +33,23 @@ jobs:
 - job: sonar_scan
   displayName: SonarQube Scan
   steps:
+    - task: SonarQubePrepare@5
+      inputs:
+        SonarQube: 'sonarqubeconnection'  
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'bhawesh22_Todo_Application'
+        cliProjectName: 'Todo_Application'
+        cliSources: 'src'
+      displayName: 'Prepare SonarQube Analysis'
 
-  - task: SonarQubePrepare@5
-    inputs:
-      SonarQube: 'sonarqubeconnection'
-      scannerMode: 'CLI'
-      configMode: 'manual'
-      cliProjectKey: 'bhawesh22_Todo_Application'
-      cliProjectName: 'Todo_Application'
-      cliSources: 'src'
-    displayName: 'Prepare SonarQube Analysis'
+    - task: SonarQubeAnalyze@5   
+      displayName: 'Run SonarQube Analysis'
+      inputs:
+        jdkVersion: 'JAVA_HOME_17_X64'
 
-  - task: SonarQubeAnalyze@8
-    inputs:
-      jdkversion: 'JAVA_HOME_17_X64'
-    displayName: 'Run SonarQube Analysis'
-
-  - task: SonarQubePublish@5
-    inputs:
-      pollingTimeoutSec: '300'
-    displayName: 'Publish SonarQube Results'
+    - task: SonarQubePublish@5
+      inputs:
+        pollingTimeoutSec: '300'
+      displayName: 'Publish SonarQube Results'
 
