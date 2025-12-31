@@ -39,8 +39,8 @@ jobs:
       SonarQube: 'sonarqubeconnection'
       scannerMode: 'CLI'
       configMode: 'manual'
-      cliProjectKey: 'todo-react-app'
-      cliProjectName: 'Todo React App'
+      cliProjectKey: 'bhawesh22_Todo_Application'
+      cliProjectName: 'Todo_Application'
       cliSources: 'src'
     displayName: 'Prepare SonarQube Analysis'
 
@@ -53,3 +53,4 @@ jobs:
     inputs:
       pollingTimeoutSec: '300'
     displayName: 'Publish SonarQube Results'
+
